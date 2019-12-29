@@ -3,6 +3,7 @@ import requests
 from zipfile import ZipFile
 import argparse
 from os import remove as fileRemove
+import re
 
 parser = argparse.ArgumentParser()
 
@@ -53,11 +54,13 @@ names = parsed_html.body.find_all("samp")
 emotes = []
 
 for name in names:
-    emotes.append({
-        "name":
-        name.text,
-        "content":
-        requestContent(name.find_previous_sibling("div").find("img")["src"])
-    })
+    if re.match(r"^[a-zA-Z0-9]+$", name.text):
+        emotes.append({
+            "name":
+            name.text,
+            "content":
+            requestContent(
+                name.find_previous_sibling("div").find("img")["src"])
+        })
 
 writeZip(args.output, emotes)
