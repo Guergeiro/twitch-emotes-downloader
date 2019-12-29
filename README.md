@@ -12,8 +12,13 @@ Downloads twitch emotes in bulk from https://www.twitchmetrics.net/
 ## Quick Start
 1. Clone the repo: `https://github.com/Guergeiro/twitch-emotes-downloader.git`.
 2. Navigate to the repo: `cd twitch-emotes-downloader`.
-3. Install requirements: `pip3 install --no-cache-dir -r requirements.txt`.
-4. Run the bad boy: `python3 app.py`.
+3. Install requirements: `pip install --no-cache-dir -r requirements.txt` or `pip3 install --no-cache-dir -r requirements.txt`.
+4. Run the bad boy: `python app.py` or `python3 app.py`.
+
+#### Disclaimer
+- Use `--help or -h` for more help.
+- Default url is `https://www.twitchmetrics.net/emotes`.
+- Example streamer url: `https://www.twitchmetrics.net/c/149747285-twitchpresents/emotes`.
 
 ## Requirements
 This project is done with **Python3** in mind. Any possible compatibility with **Python2** is completly random.
