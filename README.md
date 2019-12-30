@@ -30,7 +30,7 @@ This project is done with **Python3** in mind. Any possible compatibility with *
 Please read through the [contributing guidelines](https://github.com/Guergeiro/twitch-emotes-downloader/blob/master/.github/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
 
 ## Creator
-[Breno Salles](https://brenosalles.com.)
+[Breno Salles](https://brenosalles.com)
 
 ## License
 By contributing your code, you agree to license your contribution under the [MIT License](https://github.com/Guergeiro/twitch-emotes-downloader/blob/master/LICENSE).
