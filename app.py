@@ -1,9 +1,10 @@
-from bs4 import BeautifulSoup
-import requests
-from zipfile import ZipFile
-import argparse
+from bs4 import BeautifulSoup as bs4
+from requests import get as fetch
+from requests import request
+from zipfile import ZipFile as ZipFile
 from os import remove as fileRemove
-import re
+from re import match as regexMatch
+import argparse
 
 parser = argparse.ArgumentParser()
 
@@ -19,11 +20,20 @@ parser.add_argument("-O",
                     help="Output filename of zip.\nDefault is 'output.zip'",
                     default="output.zip")
 
+parser.add_argument("-V",
+                    "--verbose",
+                    help="Adds verbosity to program. It shows what is doing",
+                    action="store_true")
+
 args = parser.parse_args()
 
 
 def requestContent(url):
-    return requests.get(url).content
+    return fetch(url).content
+
+
+def parsePage(page):
+    return bs4(page, "html.parser")
 
 
 def writeZip(file, emotes):
@@ -40,27 +50,34 @@ def writeZip(file, emotes):
     zipFile.close()
 
 
-def parsePage(page):
-    parsed_page = BeautifulSoup(page, "html.parser")
-    return parsed_page
+def buildAllEmotes(names):
+    emotes = []
+
+    for name in names:
+        if regexMatch(r"^[a-zA-Z0-9]+$", name.text):
+            emotes.append({
+                "name":
+                name.text,
+                "content":
+                requestContent(
+                    name.find_previous_sibling("div").find("img")["src"])
+            })
+
+    return emotes
 
 
-page = requests.get(args.url)
+def main():
+    if (args.verbose == True):
+        print(f"Downloading page from {args.url}")
+    parsed_html = parsePage(requestContent(args.url))
 
-parsed_html = BeautifulSoup(page.content, "html.parser")
+    if (args.verbose == True):
+        print(f"Downloading emotes from {args.url}")
+    emotes = buildAllEmotes(parsed_html.body.find_all("samp"))
 
-names = parsed_html.body.find_all("samp")
+    if (args.verbose == True):
+        print(f"Writing emotes to {args.output}")
+    writeZip(args.output, emotes)
 
-emotes = []
 
-for name in names:
-    if re.match(r"^[a-zA-Z0-9]+$", name.text):
-        emotes.append({
-            "name":
-            name.text,
-            "content":
-            requestContent(
-                name.find_previous_sibling("div").find("img")["src"])
-        })
-
-writeZip(args.output, emotes)
+main()
