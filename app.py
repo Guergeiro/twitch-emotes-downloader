@@ -23,7 +23,9 @@ parser.add_argument("-O",
 parser.add_argument("-V",
                     "--verbose",
                     help="Adds verbosity to program. It shows what is doing",
-                    action="store_true")
+                    type=int,
+                    choices=[0, 1, 2],
+                    default=1)
 
 args = parser.parse_args()
 
@@ -41,6 +43,9 @@ def writeZip(file, emotes):
     with ZipFile(f"{file}", "w") as zipFile:
         # Iterates over all images
         for emote in emotes:
+            if (args.verbose > 1):
+                print(f"Writing {emote.get('name')} to {file}")
+
             # Opens a {imageName}.png to write image
             with open(f"{emote.get('name')}.png", "wb") as imageFile:
                 imageFile.write(emote.get("content"))
@@ -55,27 +60,25 @@ def buildAllEmotes(names):
 
     for name in names:
         if regexMatch(r"^[a-zA-Z0-9]+$", name.text):
-            emotes.append({
-                "name":
-                name.text,
-                "content":
-                requestContent(
-                    name.find_previous_sibling("div").find("img")["src"])
-            })
+            url = name.find_previous_sibling("div").find("img")["src"]
+            if (args.verbose > 1):
+                print(f"Downloading {name.text} from {url}")
+
+            emotes.append({"name": name.text, "content": requestContent(url)})
 
     return emotes
 
 
 def main():
-    if (args.verbose == True):
+    if (args.verbose > 0):
         print(f"Downloading page from {args.url}")
     parsed_html = parsePage(requestContent(args.url))
 
-    if (args.verbose == True):
+    if (args.verbose > 0):
         print(f"Downloading emotes from {args.url}")
     emotes = buildAllEmotes(parsed_html.body.find_all("samp"))
 
-    if (args.verbose == True):
+    if (args.verbose > 0):
         print(f"Writing emotes to {args.output}")
     writeZip(args.output, emotes)
 
