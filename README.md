@@ -1,36 +1,43 @@
 # twitch-emotes-downloader
+
 Downloads twitch emotes in bulk from https://www.twitchmetrics.net/
 
 ## Table of Contents
+
 - [Quick Start](#quick-start)
-- [Requirements](#requirements)
-- [Status](#status)
-- [Contributing](#contributing)
+- [Using Source](#using-source)
 - [Creator](#creator)
 - [License](#license)
 
 ## Quick Start
-1. Clone the repo: `https://github.com/Guergeiro/twitch-emotes-downloader.git`.
-2. Navigate to the repo: `cd twitch-emotes-downloader`.
-3. Install requirements: `pip install --no-cache-dir -r requirements.txt` or `pip3 install --no-cache-dir -r requirements.txt`.
-4. Run the bad boy: `python app.py` or `python3 app.py`.
 
-#### Disclaimer
-- Use `--help or -h` for more help.
-- Default url is `https://www.twitchmetrics.net/emotes`.
-- Example streamer url: `https://www.twitchmetrics.net/c/149747285-twitchpresents/emotes`.
+1. Head into the releases page.
+2. Download the corresponding binary to your OS.
+3. Run it.
 
-## Requirements
-This project is done with **Python3** in mind. Any possible compatibility with **Python2** is completly random.
+```console
+# To see how to use and extra flags
+$ twe-dl --help
+```
 
-## Status
-[![Build Status](https://github.com/Guergeiro/twitch-emotes-downloader/workflows/Build/badge.svg)](https://github.com/Guergeiro/twitch-emotes-downloader/actions?workflow=Build)
+## Using Source
 
-## Contributing
-Please read through the [contributing guidelines](https://github.com/Guergeiro/twitch-emotes-downloader/blob/master/.github/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
+twitch-emotes-downloader is an open source project, distributed under a
+[GPLv3 license](./LICENSE). This document explains how to check out the sources,
+build them on your own machine, and run them.
+
+This project uses [Go](https://go.dev) as a programming language, so you need to
+install it first.
+
+1. Clone the repository.
+2. Install its dependencies.
+3. Execute `go run main.go`
 
 ## Creator
+
 [Breno Salles](https://brenosalles.com)
 
 ## License
-By contributing your code, you agree to license your contribution under the [MIT License](https://github.com/Guergeiro/twitch-emotes-downloader/blob/master/LICENSE).
+
+By contributing your code, you agree to license your contribution under the
+[MIT License](./LICENSE).

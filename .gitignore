@@ -1,111 +1,96 @@
+# Created by https://www.toptal.com/developers/gitignore/api/linux,macos,windows,go,visualstudiocode,vim
+# Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,windows,go,visualstudiocode,vim
 
-# Created by https://www.gitignore.io/api/python,visualstudiocode
-# Edit at https://www.gitignore.io/?templates=python,visualstudiocode
-
-### Python ###
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
+### Go ###
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
 *.so
+*.dylib
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# Test binary, built with `go test -c`
+*.test
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# Dependency directories (remove the comment below to include it)
+# vendor/
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
+# Go workspace file
+go.work
 
-# Translations
-*.mo
-*.pot
+### Linux ###
+*~
 
-# Scrapy stuff:
-.scrapy
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
 
-# Sphinx documentation
-docs/_build/
+# KDE directory preferences
+.directory
 
-# PyBuilder
-target/
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
 
-# pyenv
-.python-version
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
 
-# celery beat schedule file
-celerybeat-schedule
+# Icon must end with two \r
+Icon
 
-# SageMath parsed files
-*.sage.py
 
-# Spyder project settings
-.spyderproject
-.spyproject
+# Thumbnails
+._*
 
-# Rope project settings
-.ropeproject
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
 
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
 
-# mkdocs documentation
-/site
+### macOS Patch ###
+# iCloud generated files
+*.icloud
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+### Vim ###
+# Swap
+[._]*.s[a-v][a-z]
+!*.svg  # comment out if you don't need vector files
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
 
-# Pyre type checker
-.pyre/
+# Session
+Session.vim
+Sessionx.vim
+
+# Temporary
+.netrwhist
+# Auto-generated tag files
+tags
+# Persistent undo
+[._]*.un~
 
 ### VisualStudioCode ###
 .vscode/*
@@ -113,9 +98,43 @@ dmypy.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
+.ionide
 
-# End of https://www.gitignore.io/api/python,visualstudiocode
+### Windows ###
+# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Dump file
+*.stackdump
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# End of https://www.toptal.com/developers/gitignore/api/linux,macos,windows,go,visualstudiocode,vim

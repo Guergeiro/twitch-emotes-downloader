@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v4
+
+      - name: Pretty Tag
+        run: |
+          echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: Build
+        run: go build -o target/twe-dl-${{ matrix.target }}-${{ env.VERSION }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: twe-dl-${{ matrix.target }}-${{ env.VERSION }}
+          path: target/twe-dl*
+
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+
+      - name: Generate Checksums
+        run: for file in twe-dl*/twe-dl*; do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256"; done
+
+      - name: Generate Release Notes
+        run: git log --pretty=format:"%s" $(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)..$(git describe --tags) > RELEASE.md
+
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        with:
+          files: twe-dl*/twe-dl*
+          body_path: RELEASE.md
