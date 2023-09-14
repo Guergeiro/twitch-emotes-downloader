@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/spf13/cobra"
@@ -63,6 +64,48 @@ func collectEmotes(url string) []emote {
 	return emotes
 }
 
+type indexedReadCloser struct {
+	idx   int
+	value io.ReadCloser
+}
+
+func downloadImages(emotes []emote) map[int]io.ReadCloser {
+	images := map[int]io.ReadCloser{}
+	ch := make(chan indexedReadCloser)
+
+	var wg sync.WaitGroup
+	for i, emote := range emotes {
+		wg.Add(1)
+		go func(idx int, url string, ch chan<- indexedReadCloser, wg *sync.WaitGroup) {
+			defer wg.Done()
+
+			indexed := indexedReadCloser{
+				idx: idx,
+			}
+
+			imageBody, err := getContent(url)
+			if err != nil {
+				log.Fatal(err)
+				indexed.value = nil
+				ch <- indexed
+			}
+			indexed.value = imageBody
+			ch <- indexed
+		}(i, emote.url, ch, &wg)
+	}
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	for indexed := range ch {
+		images[indexed.idx] = indexed.value
+	}
+
+	return images
+}
+
 func writeZip(emotes []emote, output string) {
 	f, err := os.Create(output)
 	if err != nil {
@@ -74,16 +117,17 @@ func writeZip(emotes []emote, output string) {
 	z := zip.NewWriter(f)
 	defer z.Close()
 
-	for _, emote := range emotes {
+	images := downloadImages(emotes)
+
+	for i, emote := range emotes {
 		filename := url.PathEscape(fmt.Sprintf("%s.png", emote.name))
 		file, err := z.Create(filename)
 		if err != nil {
 			log.Fatal(err)
 			continue
 		}
-		imageBody, err := getContent(emote.url)
-		if err != nil {
-			log.Fatal(err)
+		imageBody := images[i]
+		if imageBody == nil {
 			continue
 		}
 
