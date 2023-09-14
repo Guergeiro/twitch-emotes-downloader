@@ -23,13 +23,33 @@ jobs:
         run: |
           echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
-      - name: Build
-        run: go build -o target/twe-dl-${{ matrix.target }}-${{ env.VERSION }}
+      - name: Build | Windows
+        if: matrix.os == 'windows-latest'
+        run: go build -o target/twe-dl.exe
+
+      - name: Build | Unix
+        if: matrix.os != 'windows-latest'
+        run: go build -o target/twe-dl
+
+      - name: Archive | Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          7z a twe-dl-windows.zip target/twe-dl.exe
+
+      - name: Archive | Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          tar czvf twe-dl-linux.tar.gz target/twe-dl
+
+      - name: Archive | macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          tar czvf twe-dl-macos.tar.gz target/twe-dl
 
       - uses: actions/upload-artifact@v3
         with:
-          name: twe-dl-${{ matrix.target }}-${{ env.VERSION }}
-          path: target/twe-dl*
+          name: twe-dl-${{ matrix.os }}-${{ env.VERSION }}
+          path: twe-dl*
 
 
   release:
