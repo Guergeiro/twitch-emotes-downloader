@@ -1,9 +1,12 @@
 package cmd
 
 import (
-	"errors"
+	"archive/zip"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/PuerkitoBio/goquery"
@@ -15,34 +18,80 @@ type emote struct {
 	url  string
 }
 
-func collectEmotes(url string) ([]emote, error) {
-	emotes := []emote{}
-
+func getContent(url string) (io.ReadCloser, error) {
+	log.Printf("Downloading %s\n", url)
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		return nil, errors.New("Invalid")
+	if res.StatusCode >= 300 {
+		return nil, fmt.Errorf("Invalid StatusCode %d", res.StatusCode)
 	}
-	doc, err := goquery.NewDocumentFromReader(res.Body)
+	return res.Body, nil
+}
+
+func collectEmotes(url string) []emote {
+	emotes := []emote{}
+
+	pageBody, err := getContent(url)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
+		return emotes
+	}
+	defer pageBody.Close()
+
+	doc, err := goquery.NewDocumentFromReader(pageBody)
+	if err != nil {
+		log.Fatal(err)
+		return emotes
 	}
 
-	doc.Find("samp").Each(func(idx int, s *goquery.Selection) {
-		img := s.Prev().Find("img")
-		if href, exists := img.Attr("src"); exists {
-			emotes = append(emotes, emote{
-				name: s.Text(),
-				url:  href,
-			})
+	selection := doc.Find("samp")
+	for i := range selection.Nodes {
+		single := selection.Eq(i)
+		img := single.Prev().Find("img")
+		href, exists := img.Attr("src")
+		if exists == false {
+			continue
 		}
-	})
-	fmt.Println(emotes)
+		emotes = append(emotes, emote{
+			name: single.Text(),
+			url:  href,
+		})
+	}
 
-	return emotes, nil
+	return emotes
+}
+
+func writeZip(emotes []emote, output string) {
+	f, err := os.Create(output)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	defer f.Close()
+
+	z := zip.NewWriter(f)
+	defer z.Close()
+
+	for _, emote := range emotes {
+		filename := url.PathEscape(fmt.Sprintf("%s.png", emote.name))
+		file, err := z.Create(filename)
+		if err != nil {
+			log.Fatal(err)
+			continue
+		}
+		imageBody, err := getContent(emote.url)
+		if err != nil {
+			log.Fatal(err)
+			continue
+		}
+
+		if _, err := io.Copy(file, imageBody); err != nil {
+			log.Fatal(err)
+		}
+		imageBody.Close()
+	}
 }
 
 func Execute() {
@@ -55,9 +104,8 @@ func Execute() {
 		Long: `(tw)itch (e)motes (d)own(l)oader is a cli that downloads emotes in bulk
                                    from https://www.twitchmetrics.net/`,
 		Run: func(cmd *cobra.Command, args []string) {
-			if emotes, err := collectEmotes(url); err == nil {
-				fmt.Println(emotes)
-			}
+			emotes := collectEmotes(url)
+			writeZip(emotes, output)
 		},
 	}
 
