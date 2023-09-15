@@ -18,6 +18,14 @@ Downloads twitch emotes in bulk from https://www.twitchmetrics.net/
 ```console
 # To see how to use and extra flags
 $ twe-dl --help
+
+# To run with default values
+$ twe-dl
+
+# To run with one or more urls
+$ twe-dl https://www.twitchmetrics.net/emotes \
+    https://www.twitchmetrics.net/c/26261471-asmongold/emotes \
+    https://www.twitchmetrics.net/c/149747285-twitchpresents/emotes
 ```
 
 ## Using Source
