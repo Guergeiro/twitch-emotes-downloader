@@ -1,0 +1,48 @@
+name: bump
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+            token: ${{ secrets.PAT }}
+      - uses: actions/setup-go@v5
+        with:
+            go-version: '1.21'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Bump dependencies
+        run: |
+          go get -u ./...
+          go mod tidy
+      - name: Create empty changeset
+        run: |
+          echo -e "---\n\"twitch-emotes-downloader\": patch\n---\n\nBump dependencies" > ".changeset/bump-dependencies-$RANDOM.md"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.PAT }}
+          add-paths: |
+            go.mod
+            go.sum
+            .changeset
+          commit-message: "ci: bump dependencies"
+          committer: "Breno Salles <git@brenosalles.com>"
+          author: "Breno Salles <git@brenosalles.com>"
+          branch: "ci/bump-dependencies"
+          delete-branch: true
+          base: "master"
+          title: "ci: bump dependencies"
+          body: "Automated bump of dependencies."
+          assignees: "Guergeiro"
