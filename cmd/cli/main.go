@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func Execute() {
+func main() {
 	url := "https://www.twitchmetrics.net/emotes"
 	output := "output.zip"
 

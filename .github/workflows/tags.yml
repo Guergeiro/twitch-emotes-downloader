@@ -1,0 +1,130 @@
+name: tags
+
+on:
+  push:
+    tags:
+      - "*"
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build-64:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [arm64, amd64]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+            go-version: '1.21'
+
+      - name: Set GOARCH
+        run: |
+          echo "GOARCH=${{ matrix.arch }}" >> $GITHUB_ENV
+
+      - name: Pretty Tag
+        run: |
+          echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: Build | Windows
+        if: matrix.os == 'windows-latest'
+        run: make build-windows
+
+      - name: Build | Unix
+        if: matrix.os != 'windows-latest'
+        run: make build-unix
+
+      - name: Archive | Windows
+        if: matrix.os == 'windows-latest'
+        run: make archive-windows
+
+      - name: Archive | Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: make archive-linux
+
+      - name: Archive | macOS
+        if: matrix.os == 'macos-latest'
+        run: make archive-macos
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: twe-dl-${{ matrix.os }}-${{ matrix.arch }}-${{ env.VERSION }}
+          path: twe-dl*
+
+  build-32:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        arch: [arm, 386]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+            go-version: '1.21'
+
+      - name: Set GOARCH
+        run: |
+          echo "GOARCH=${{ matrix.arch }}" >> $GITHUB_ENV
+
+      - name: Pretty Tag
+        run: |
+          echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: Build | Windows
+        if: matrix.os == 'windows-latest'
+        run: make build-windows
+
+      - name: Build | Unix
+        if: matrix.os != 'windows-latest'
+        run: make build-unix
+
+      - name: Archive | Windows
+        if: matrix.os == 'windows-latest'
+        run: make archive-windows
+
+      - name: Archive | Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: make archive-linux
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: twe-dl-${{ matrix.os }}-${{ matrix.arch }}-${{ env.VERSION }}
+          path: twe-dl*
+
+  notes:
+    needs: [build-64, build-32]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+
+      - name: Extract changelog
+        run: |
+          current_tag="${{ github.ref_name }}"
+
+          previous_tag="$(git describe --tags --abbrev=0 HEAD^)"
+
+          changelog="$(git diff --no-color --unified=0 \
+           $previous_tag $current_tag -- CHANGELOG.md \
+           --diff-filter=A | grep '^[+]' | sed '1d; s/^+//')"
+
+          echo "$changelog" > changelog.txt
+
+
+      - name: Generate Checksums
+        run: for file in twe-dl*/twe-dl*; do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256"; done
+
+      - name: Generate release notes
+        uses: softprops/action-gh-release@v2
+        with:
+          make_latest: true
+          files: twe-dl*/twe-dl*
+          body_path: changelog.txt
