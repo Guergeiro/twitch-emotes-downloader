@@ -11,9 +11,9 @@ jobs:
   build-64:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [linux, darwin, windows]
         arch: [arm64, amd64]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -21,33 +21,17 @@ jobs:
         with:
             go-version: '1.21'
 
-      - name: Set GOARCH
+      - name: Set env variables
         run: |
           echo "GOARCH=${{ matrix.arch }}" >> $GITHUB_ENV
-
-      - name: Pretty Tag
-        run: |
+          echo "GOOS=${{ matrix.os }}" >> $GITHUB_ENV
           echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
-      - name: Build | Windows
-        if: matrix.os == 'windows-latest'
-        run: make build-windows
+      - name: Build
+        run: make build
 
-      - name: Build | Unix
-        if: matrix.os != 'windows-latest'
-        run: make build-unix
-
-      - name: Archive | Windows
-        if: matrix.os == 'windows-latest'
-        run: make archive-windows
-
-      - name: Archive | Linux
-        if: matrix.os == 'ubuntu-latest'
-        run: make archive-linux
-
-      - name: Archive | macOS
-        if: matrix.os == 'macos-latest'
-        run: make archive-macos
+      - name: Archive
+        run: make archive
 
       - uses: actions/upload-artifact@v4
         with:
@@ -57,9 +41,9 @@ jobs:
   build-32:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [linux, windows]
         arch: [arm, 386]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -67,29 +51,17 @@ jobs:
         with:
             go-version: '1.21'
 
-      - name: Set GOARCH
+      - name: Set env variables
         run: |
           echo "GOARCH=${{ matrix.arch }}" >> $GITHUB_ENV
-
-      - name: Pretty Tag
-        run: |
+          echo "GOOS=${{ matrix.os }}" >> $GITHUB_ENV
           echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
-      - name: Build | Windows
-        if: matrix.os == 'windows-latest'
-        run: make build-windows
+      - name: Build
+        run: make build
 
-      - name: Build | Unix
-        if: matrix.os != 'windows-latest'
-        run: make build-unix
-
-      - name: Archive | Windows
-        if: matrix.os == 'windows-latest'
-        run: make archive-windows
-
-      - name: Archive | Linux
-        if: matrix.os == 'ubuntu-latest'
-        run: make archive-linux
+      - name: Archive
+        run: make archive
 
       - uses: actions/upload-artifact@v4
         with:
