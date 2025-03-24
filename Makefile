@@ -43,12 +43,20 @@ run:
 # Test the application
 test:
 	@echo "Testing..."
+	@go test ./... -short
+
+test-full:
+	@echo "Testing..."
 	@go test ./...
 
 coverage:
 	@echo "Testing..."
-	@go test ./... -coverprofile="c.out"
+	@go test ./... -coverprofile="c.out" -short
 	@go tool cover -html="c.out"
+
+format:
+	@echo "Formatting..."
+	@gofmt -w .
 
 # Clean the binary
 clean:
@@ -71,4 +79,4 @@ change-version:
 change-tag:
 	@pnpm dlx @changesets/cli tag
 
-.PHONY: all build build-unix build-windows archive archive-unix archive-windows run test clean change-add change-empty change-status change-version change-tag
+.PHONY: all build build-unix build-windows archive archive-unix archive-windows run test test-full format clean change-add change-empty change-status change-version change-tag
