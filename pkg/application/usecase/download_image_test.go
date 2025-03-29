@@ -22,8 +22,22 @@ func TestDownloadImageUseCaseWithFailedDownload(t *testing.T) {
 	assert.Empty(t, actual)
 }
 
-func TestDownloadImageUseCase(t *testing.T) {
+func TestDownloadImageUseCaseNoContentType(t *testing.T) {
 	fakeDownloader := fakeDownloader{shouldError: false}
+
+	entity := entity.NewEmote("some name", url.URL{})
+
+	usecase := NewDownloadImageUseCase(fakeDownloader.download)
+
+	actual, err := usecase.Execute(entity)
+	log.Println(actual)
+
+	assert.Nil(t, err)
+	assert.Equal(t, "image/png", actual.ContentType())
+}
+
+func TestDownloadImageUseCaseWithContentType(t *testing.T) {
+	fakeDownloader := fakeDownloader{shouldError: false, contentType: "text/html"}
 
 	entity := entity.NewEmote("some name", url.URL{})
 

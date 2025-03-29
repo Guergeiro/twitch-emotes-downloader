@@ -21,6 +21,7 @@ func (b fakeBody) Close() error {
 
 type fakeDownloader struct {
 	shouldError bool
+	contentType string
 }
 
 func (d fakeDownloader) download(u url.URL) (*http.Response, error) {
@@ -30,7 +31,7 @@ func (d fakeDownloader) download(u url.URL) (*http.Response, error) {
 	return &http.Response{
 		Body: fakeBody{},
 		Header: http.Header{
-			"Content-Type": []string{"text/html"},
+			"Content-Type": []string{d.contentType},
 		},
 	}, nil
 }

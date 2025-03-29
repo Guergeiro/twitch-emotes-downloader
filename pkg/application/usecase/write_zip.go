@@ -2,8 +2,10 @@ package usecase
 
 import (
 	"archive/zip"
+	"errors"
 	"fmt"
 	"io"
+	"mime"
 	"net/url"
 	"os"
 
@@ -27,7 +29,16 @@ func (u WriteZipUseCase) Execute(output string, emotes []entity.Emote) error {
 	defer z.Close()
 
 	for _, emote := range emotes {
-		filename := url.PathEscape(fmt.Sprintf("%s.png", emote.Name()))
+		extension, err := mime.ExtensionsByType(emote.Image().ContentType())
+		if err != nil {
+			return err
+		}
+		if extension == nil || len(extension) == 0 {
+			return errors.New("no extension available for the content type")
+		}
+		filename := url.PathEscape(
+			fmt.Sprintf("%s%s", emote.Name(), extension[0]),
+		)
 		file, err := z.Create(filename)
 		if err != nil {
 			return err
