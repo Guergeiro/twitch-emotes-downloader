@@ -25,5 +25,11 @@ func (u DownloadImageUseCase) Execute(emote entity.Emote) (entity.Image, error) 
 		return entity.Image{}, err
 	}
 
-	return entity.NewImage(res.Body, res.Header.Get("content-type")), nil
+	contentType := res.Header.Get("content-type")
+
+	if contentType == "" {
+		contentType = "image/png"
+	}
+
+	return entity.NewImage(res.Body, contentType), nil
 }

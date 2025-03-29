@@ -3,6 +3,7 @@ package mapper
 import (
 	"io"
 	"net/url"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/guergeiro/twitch-emotes-downloader/pkg/domain/entity"
@@ -29,7 +30,7 @@ func (m GoQueryHtmlEmoteMapper) ToEmotes(html io.ReadCloser) ([]entity.Emote, er
 		if exists == false {
 			continue
 		}
-		u, err := url.Parse(href)
+		u, err := url.Parse(strings.ReplaceAll(href, "/static/", "/default/"))
 		if err != nil {
 			continue
 		}
