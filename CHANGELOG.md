@@ -1,5 +1,11 @@
 # twitch-emotes-downloader
 
+## 3.2.1
+
+### Patch Changes
+
+- b7877a2: Bump dependencies
+
 ## 3.2.0
 
 ### Minor Changes
