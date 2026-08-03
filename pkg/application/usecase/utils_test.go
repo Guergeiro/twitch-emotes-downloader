@@ -40,7 +40,7 @@ type fakeMapper struct {
 	shouldError bool
 }
 
-func (m fakeMapper) ToEmotes(body io.ReadCloser) ([]entity.Emote, error) {
+func (m fakeMapper) ToEmotes(body io.ReadCloser, size string) ([]entity.Emote, error) {
 	if m.shouldError {
 		return []entity.Emote{}, errors.New("some error occurred")
 	}

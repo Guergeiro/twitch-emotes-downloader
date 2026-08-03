@@ -7,5 +7,5 @@ import (
 )
 
 type HtmlEmoteMapper interface {
-	ToEmotes(html io.ReadCloser) ([]entity.Emote, error)
+	ToEmotes(html io.ReadCloser, size string) ([]entity.Emote, error)
 }

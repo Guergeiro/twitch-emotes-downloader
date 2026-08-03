@@ -13,7 +13,7 @@ func TestDownloadEmotesUseCaseWithFailedDownload(t *testing.T) {
 
 	usecase := NewDownloadEmotesUseCase(fakeDownloader.download, fakeMapper)
 
-	actual, err := usecase.Execute(url.URL{})
+	actual, err := usecase.Execute(url.URL{}, "3.0")
 
 	assert.Error(t, err)
 	assert.Empty(t, actual)
@@ -25,7 +25,7 @@ func TestDownloadEmotesUseCaseWithFailedMapper(t *testing.T) {
 
 	usecase := NewDownloadEmotesUseCase(fakeDownloader.download, fakeMapper)
 
-	actual, err := usecase.Execute(url.URL{})
+	actual, err := usecase.Execute(url.URL{}, "3.0")
 
 	assert.Error(t, err)
 	assert.Empty(t, actual)
@@ -37,7 +37,7 @@ func TestDownloadEmotesUseCase(t *testing.T) {
 
 	usecase := NewDownloadEmotesUseCase(fakeDownloader.download, fakeMapper)
 
-	actual, err := usecase.Execute(url.URL{})
+	actual, err := usecase.Execute(url.URL{}, "3.0")
 
 	assert.Nil(t, err)
 	assert.Empty(t, actual)
