@@ -31,7 +31,7 @@ func TestDownloadEmotesController(t *testing.T) {
 	hrefs := []string{"https://www.twitchmetrics.net/emotes"}
 	output := "output.zip"
 
-	err := c.Handle(hrefs, output)
+	err := c.Handle(hrefs, output, "3.0")
 
 	assert.Nil(t, err)
 

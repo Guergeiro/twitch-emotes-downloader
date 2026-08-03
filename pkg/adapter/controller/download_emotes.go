@@ -29,12 +29,14 @@ func NewDownloadEmotesController(
 func (c DownloadEmotesController) Handle(
 	hrefs []string,
 	output string,
+	size string,
 ) error {
 
 	channel :=
 		c.startDownloadImages(
 			c.startDownloadEmotes(
 				c.startParseHrefs(hrefs),
+				size,
 			),
 		)
 
@@ -61,13 +63,13 @@ func (c DownloadEmotesController) startParseHrefs(hrefs []string) <-chan url.URL
 	return out
 }
 
-func (c DownloadEmotesController) startDownloadEmotes(channel <-chan url.URL) <-chan []entity.Emote {
+func (c DownloadEmotesController) startDownloadEmotes(channel <-chan url.URL, size string) <-chan []entity.Emote {
 	out := make(chan []entity.Emote)
 
 	go func() {
 		defer close(out)
 		for u := range channel {
-			if emotes, err := c.downloadEmotesUseCase.Execute(u); err == nil {
+			if emotes, err := c.downloadEmotesUseCase.Execute(u, size); err == nil {
 				out <- emotes
 			}
 		}

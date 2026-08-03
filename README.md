@@ -38,8 +38,8 @@ This project uses [Go](https://go.dev) as a programming language, so you need to
 install it first.
 
 1. Clone the repository.
-2. Install its dependencies.
-3. Execute `go run main.go`
+2. Install its dependencies (`go mod download`).
+3. Execute `go run ./cmd/cli/main.go`.
 
 ## Creator
 

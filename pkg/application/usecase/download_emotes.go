@@ -23,12 +23,12 @@ func NewDownloadEmotesUseCase(
 	}
 }
 
-func (u DownloadEmotesUseCase) Execute(url url.URL) ([]entity.Emote, error) {
+func (u DownloadEmotesUseCase) Execute(url url.URL, size string) ([]entity.Emote, error) {
 	res, err := u.download(url)
 	if err != nil {
 		return []entity.Emote{}, err
 	}
 	defer res.Body.Close()
 
-	return u.htmlEmoteMapper.ToEmotes(res.Body)
+	return u.htmlEmoteMapper.ToEmotes(res.Body, size)
 }
